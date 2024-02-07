@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trend Checker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .center-button {
+            display: flex;
+            justify-content: center;
+        }
+        #trendResult {
+            text-align: center;
+            font-size: 1.5em; /* Larger font size */
+            border-radius: 10px; /* Rounded border */
+            background-color: #f0f0f0; /* Background color */
+            padding: 10px; /* Padding inside the result box */
+            margin-top: 20px; /* Added space between button and result */
+        }
+        .container {
+            width: 80%;
+        }
+        .form-label {
+            font-weight: bold; /* Make labels bolder */
+        }
+        .error-message {
+            color: red; /* Error message color */
+            font-weight: bold; /* Make error message bold */
+            margin-top: 10px; /* Add space between error message and inputs */
+            text-align: center;/* Center vertically */
+        }
+    </style>
+</head>
+<body class="bg-light p-4">
+    <div class="container">
+    <h1 class="text-center mb-4">Trend Checker</h1>
+    <div class="row mb-3">
+        <div class="col">
+            <label for="spp" class="form-label">SPP:</label>
+            <input type="number" id="spp" class="form-control" inputmode="numeric">
+        </div>
+        <div class="col">
+            <label for="prev_close" class="form-label">Previous Day Last 5min Close:</label>
+            <input type="number" id="prev_close" class="form-control" inputmode="numeric">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <label for="today_open" class="form-label">Current Day First Candle Open:</label>
+            <input type="number" id="today_open" class="form-control" inputmode="numeric">
+        </div>
+        <div class="col">
+            <label for="today_close" class="form-label">Current Day First Candle Close:</label>
+            <input type="number" id="today_close" class="form-control" inputmode="numeric">
+        </div>
+    </div>
+    <div class="center-button">
+        <button onclick="checkTrend()" class="btn btn-primary">Check Trend</button>
+    </div>
+    <div id="trendResult"></div>
+    <div id="error" class="error-message"></div> <!-- Error message container -->
+</div>
+    <script>
+        function checkTrend() {
+            var spp = document.getElementById('spp').value.trim();
+            var prev_close = document.getElementById('prev_close').value.trim();
+            var today_open = document.getElementById('today_open').value.trim();
+            var today_close = document.getElementById('today_close').value.trim();
+            
+            var trendResultDiv = document.getElementById('trendResult');
+            var errorDiv = document.getElementById('error');
+            
+            // Check for missing inputs or invalid symbols
+            if (spp === '' || prev_close === '' || today_open === '' || today_close === '') {
+                errorDiv.textContent = 'Invalid input. Please fill in all fields.';
+                trendResultDiv.innerHTML = ''; // Clear previous result if any
+                errorDiv.style.display = 'block'; // Display error message
+                return; // Exit the function
+            }
+
+            // Check for non-numeric inputs
+            if (isNaN(spp) || isNaN(prev_close) || isNaN(today_open) || isNaN(today_close)) {
+                errorDiv.textContent = 'Invalid input. Please enter numeric values only.';
+                trendResultDiv.innerHTML = ''; // Clear previous result if any
+                errorDiv.style.display = 'block'; // Display error message
+                return; // Exit the function
+            }
+            
+            // Parse input values as floats
+            spp = parseFloat(spp);
+            prev_close = parseFloat(prev_close);
+            today_open = parseFloat(today_open);
+            today_close = parseFloat(today_close);
+
+            // Perform trend analysis
+            if (today_open > prev_close + spp || today_close > prev_close + spp ||
+                today_open < prev_close - spp || today_close < prev_close - spp) {
+                trendResultDiv.innerHTML = "<b>The market will show a big trend</b>";
+                trendResultDiv.style.backgroundColor = "#81c784"; /* Red background color for indicating a big trend */
+            } else {
+                trendResultDiv.innerHTML = "<b>The market won't show a big trend today</b>";
+                trendResultDiv.style.backgroundColor = "#e57373"; /* Green background color for indicating no big trend */
+            }
+
+            // Clear error message
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none'; // Hide error message if there was one
+        }
+    </script>
+</body>
+</html>

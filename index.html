@@ -8,23 +8,37 @@
     <style>
         .list-group-item {
             border-radius: 8px;
-            margin-bottom: 10px; /* Added margin between list items */
+            margin-bottom: 10px;
         }
         .list-group-item p {
-            color: black; /* Set description text color to black */
-            margin-bottom: 0; /* Remove default bottom margin for paragraphs */
+            color: black;
+            margin-bottom: 0;
         }
         .list-group-item p:hover {
-            text-decoration: none; /* Remove underline on hover for description text */
+            text-decoration: none;
+        }
+        .center-button {
+            display: flex;
+            justify-content: center;
         }
     </style>
 </head>
 <body class="bg-light p-4">
     <div class="container">
         <h1 class="text-center mb-4">TradingView Point Calculators</h1>
+        <!-- Google Sign-In button -->
+        <div id="loginButton" class="center-button">    </div>
+
+        <!-- List of calculators -->
         <div class="row">
             <div class="col">
                 <ul class="list-group">
+                    <li class="list-group-item">
+                        <a href="godMode.html" class="text-decoration-none">
+                            <h4>GodMode</h4>
+                            <p>A tool to analyze candlestick patterns using user-inputted data, providing insights for informed trading decisions and strategy development.</p>
+                        </a>
+                    </li>
                     <li class="list-group-item">
                         <a href="polarTrader.html" class="text-decoration-none">
                             <h4>Polar Trader</h4>
@@ -37,9 +51,35 @@
                             <p>Check market trends and predict potential movements based on past data.</p>
                         </a>
                     </li>
+                    
                 </ul>
             </div>
         </div>
     </div>
+
+    <!-- Google Sign-In JavaScript SDK -->
+    <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+    <script>
+        function onSignIn(googleUser) {
+            // Store authentication status in localStorage
+            localStorage.setItem('isLoggedIn', 'true');
+
+            // Handle the sign-in process here, e.g., store user data or redirect to another page
+            console.log('User signed in:', googleUser);
+            // You can redirect the user to another page after successful login
+            // window.location.href = "dashboard.html";
+        }
+
+        function init() {
+            gapi.signin2.render('loginButton', {
+                'scope': 'profile email',
+                'width': 200,
+                'height': 50,
+                'longtitle': true,
+                'theme': 'light',
+                'onsuccess': onSignIn
+            });
+        }
+    </script>
 </body>
 </html>

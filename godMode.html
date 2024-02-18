@@ -3,99 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PolarEquity Trader</title>
-    <!-- Bootstrap 5 CSS link -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Options Calculator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .input-container{
-            width: 80%;
-            margin: auto;
+        /* Additional custom styles can be added here */
+               /* Additional custom styles can be added here */
+               body {
+            background-color: #f8f9fa; /* Light gray background */
         }
-        .bg-color{
-            background-color: rgb(230, 230, 230);
-            height: 80px;
-            padding: 1% 0 0 0 ;
+
+        .container {
+            margin-top: 4%;
+            background-color: #ffffff; /* White background for the container */
+            border-radius: 10px; /* Rounded corners for the container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle depth effect */
+            padding: 20px; /* Add some padding inside the container */
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+        .form-control {
+            margin-bottom: 10px;
+        }
+        #output {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    
-    <h1 class="mb-4 text-center bg-color">GodMode</h1>
-    <div class="container mt-4">
-        <form id="calculationForm">
-            <div class="input-container">
-                <div class="mb-3 row">
-                    <label for="first_candle_high" class="col-sm-2 col-form-label">First Candle High:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" name="first_candle_high" id="first_candle_high" autocomplete="off">
-                    </div>
+    <div class="container">
+        <h1 class="mt-4 text-center">GodMode</h1>
+        <div id="inputs">
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="scrip_name" id="scrip_name_label" class="form-label">Select the Scrip Name:</label>
+                    <select id="scrip_name" class="form-select">
+                        <option value="NIFTY">NIFTY</option>
+                        <option value="BANKNIFTY">BANKNIFTY</option>
+                        <option value="FINNIFTY">FINNIFTY</option>
+                        <option value="SENSEX">SENSEX</option>
+                    </select>
                 </div>
-                <div class="mb-3 row">
-                    <label for="first_candle_low" class="col-sm-2 col-form-label">First Candle Low:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" name="first_candle_low" id="first_candle_low" autocomplete="off">
-                    </div>
+                <div class="col">
+                    <label for="pre_open_value" id="pre_open_value_label" class="form-label">Pre-Open Market Data:</label>
+                    <input type="text" id="pre_open_value" class="form-control" onkeypress="handleKeyPress(event)" autocomplete="off">
                 </div>
             </div>
-            <div class="text-center">
-                <button type="button" class="btn btn-primary" onclick="calculate()">Calculate</button>
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="prev_high_CE" id="prev_high_CE_label" class="form-label">Previous Day High for CE:</label>
+                    <input type="number" id="prev_high_CE" class="form-control" autocomplete="off">
+                </div>
+                <div class="col">
+                    <label for="prev_low_CE" id="prev_low_CE_label" class="form-label">Previous Day Low for CE:</label>
+                    <input type="number" id="prev_low_CE" class="form-control" autocomplete="off">
+                </div>
             </div>
-        </form>
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="prev_high_PE" id="prev_high_PE_label" class="form-label">Previous Day High for PE:</label>
+                    <input type="number" id="prev_high_PE" class="form-control" autocomplete="off">
+                </div>
+                <div class="col">
+                    <label for="prev_low_PE" id="prev_low_PE_label" class="form-label">Previous Day Low for PE:</label>
+                    <input type="number" id="prev_low_PE" class="form-control" autocomplete="off">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="OI_Strike_CE" id="OI_Strike_CE_label" class="form-label">Previous Day OI for CE:</label>
+                    <input type="number" id="OI_Strike_CE" class="form-control" autocomplete="off">
+                </div>
+                <div class="col">
+                    <label for="OI_Strike_PE" id="OI_Strike_PE_label" class="form-label">Previous Day OI for PE:</label>
+                    <input type="number" id="OI_Strike_PE" class="form-control" autocomplete="off">
+                </div>
+            </div>
 
-        <!-- Result Table -->
-        <div id="resultTableContainer" style="display: none;">
-            <h2 class="mt-4 text-center bg-color">Result</h2>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th class="text-center">Parameter</th>
-                        <th class="text-center">Value</th>
-                    </tr>
-                </thead>
-                <tbody id="resultTableBody">
-                </tbody>
-            </table>
+            <div class="text-center">
+                <button onclick="calculate()" class="btn btn-primary">Calculate</button>
+            </div>
+        </div>
+        <div id="output" class="table-responsive">
+            <!-- Output will be displayed here -->
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS and Popper.js scripts (required for Bootstrap components) -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
+    <!-- Bootstrap JS -->
+    
     <script>
-        function calculate() {
-            var first_candle_high = parseFloat(document.getElementById("first_candle_high").value);
-            var first_candle_low = parseFloat(document.getElementById("first_candle_low").value);
-
-            var north_pole = first_candle_high + (0.2611 / 100) * first_candle_high;
-            var south_pole = first_candle_low - (0.2611 / 100) * first_candle_low;
-            var capricon = north_pole - (south_pole * 0.2611 / 100) + south_pole;
-            var cancer = north_pole - (north_pole - south_pole * 0.2611 / 100);
-            var equator = (north_pole - south_pole) / 2;
-
-            var resultTableBody = document.getElementById("resultTableBody");
-            resultTableBody.innerHTML = "";
-            
-            addRow("North Pole", north_pole.toFixed(2));
-            addRow("South Pole", south_pole.toFixed(2));
-            addRow("Capricon", capricon.toFixed(2));
-            addRow("Cancer", cancer.toFixed(2));
-            addRow("Equator", equator.toFixed(2));
-
-            document.getElementById("resultTableContainer").style.display = "block";
+         function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                updateLabels();
+                event.preventDefault(); // Prevent form submission on Enter key
+            }
         }
 
-        function addRow(parameter, value) {
-            var row = document.createElement("tr");
-            var parameterCell = document.createElement("td");
-            var valueCell = document.createElement("td");
-            parameterCell.textContent = parameter;
-            valueCell.textContent = value;
-            parameterCell.className = "text-center"; // Center align parameter
-            valueCell.className = "text-center"; // Center align value
-            row.appendChild(parameterCell);
-            row.appendChild(valueCell);
-            document.getElementById("resultTableBody").appendChild(row);
+        function updateLabels() {
+            var preOpenValueInput = document.getElementById('pre_open_value');
+            var preOpenValue = preOpenValueInput.value;
+
+            // Extract float value from the input
+            var floatValue = parseFloat(preOpenValue.replace(/[^\d.]/g, ''));
+
+            // Round off the extracted float value to the nearest hundredth
+            var roundedValue = Math.round(floatValue / 100) * 100;
+
+            // Update the input field with the rounded value
+            preOpenValueInput.value = roundedValue;
+
+            // Update the labels
+            document.getElementById('prev_high_CE_label').textContent = 'Previous Day High for ' + roundedValue + ' CE:';
+            document.getElementById('prev_low_CE_label').textContent = 'Previous Day Low for ' + roundedValue + ' CE:';
+            document.getElementById('prev_high_PE_label').textContent = 'Previous Day High for ' + roundedValue + ' PE:';
+            document.getElementById('prev_low_PE_label').textContent = 'Previous Day Low for ' + roundedValue + ' PE:';
+            document.getElementById('OI_Strike_CE_label').textContent = 'Previous Day OI for ' + roundedValue + ' CE:';
+            document.getElementById('OI_Strike_PE_label').textContent = 'Previous Day OI for ' + roundedValue + ' CE:';
+            document.getElementById('strike_price').innerText = roundedValue;           
+            // Repeat the same pattern for other labels
+        }
+
+        function calculate() {
+            // Get user inputs
+            const scripName = document.getElementById('scrip_name').value;
+            const preOpenValue = parseFloat(document.getElementById('pre_open_value').value);
+            const prevHighCE = parseFloat(document.getElementById('prev_high_CE').value);
+            const prevLowCE = parseFloat(document.getElementById('prev_low_CE').value);
+            const prevHighPE = parseFloat(document.getElementById('prev_high_PE').value);
+            const prevLowPE = parseFloat(document.getElementById('prev_low_PE').value);
+            const OIStrikeCE = parseFloat(document.getElementById('OI_Strike_CE').value);
+            const OIStrikePE = parseFloat(document.getElementById('OI_Strike_PE').value);
+
+            // Perform calculations
+            const CEStrikeAvg = ((prevHighCE + prevLowCE) / 2).toFixed(2);
+            const PEStrikeAvg = ((prevHighPE + prevLowPE) / 2).toFixed(2);
+            const SPP = (((CEStrikeAvg * OIStrikeCE) + (PEStrikeAvg * OIStrikePE)) / (OIStrikeCE + OIStrikePE)).toFixed(2);
+
+            const targets = {
+                "Target 1": (parseFloat(SPP) + (0.2611 * parseFloat(SPP))).toFixed(2),
+                "Target 2": (parseFloat(SPP) + (0.5 * parseFloat(SPP))).toFixed(2),
+                "Target 3": (parseFloat(SPP) + (0.7389 * parseFloat(SPP))).toFixed(2),
+                "Target 1 - SPP": (0.2611 * parseFloat(SPP)).toFixed(2),
+                "Target 2 - SPP": (0.5 * parseFloat(SPP)).toFixed(2),
+                "Target 3 - SPP": (0.7389 * parseFloat(SPP)).toFixed(2)
+            };
+
+            // Display output
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = `
+                <h2>Targets for ${scripName} - Buy above ${SPP}:</h2>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Type</th>
+                        <th>Target 1</th>
+                        <th>Target 1 - SPP</th>
+                        <th>Target 2</th>
+                        <th>Target 2 - SPP</th>
+                        <th>Target 3</th>
+                        <th>Target 3 - SPP</th>
+                    </tr>
+                    <tr>
+                        <td>Buying</td>
+                        <td>${targets['Target 1']}</td>
+                        <td>${targets['Target 1 - SPP']}</td>
+                        <td>${targets['Target 2']}</td>
+                        <td>${targets['Target 2 - SPP']}</td>
+                        <td>${targets['Target 3']}</td>
+                        <td>${targets['Target 3 - SPP']}</td>
+                    </tr>
+                </table>
+                <h2>Targets for ${scripName} - Sell below ${SPP}:</h2>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Type</th>
+                        <th>Target 1</th>
+                        <th>Target 1 - SPP</th>
+                        <th>Target 2</th>
+                        <th>Target 2 - SPP</th>
+                        <th>Target 3</th>
+                        <th>Target 3 - SPP</th>
+                    </tr>
+                    <tr>
+                        <td>Selling</td>
+                        <td>${(parseFloat(SPP) - parseFloat(targets['Target 1 - SPP'])).toFixed(2)}</td>
+                        <td>${targets['Target 1 - SPP']}</td>
+                        <td>${(parseFloat(SPP) - parseFloat(targets['Target 2 - SPP'])).toFixed(2)}</td>
+                        <td>${targets['Target 2 - SPP']}</td>
+                        <td>${(parseFloat(SPP) - parseFloat(targets['Target 3 - SPP'])).toFixed(2)}</td>
+                        <td>${targets['Target 3 - SPP']}</td>
+                    </tr>
+                </table>
+            `;
         }
     </script>
 </body>
